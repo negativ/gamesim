@@ -3,17 +3,17 @@
 #include <Core/Components.hpp>
 #include <Core/Map.hpp>
 #include <Features/GameContext.hpp>
-#include <Features/March.hpp>
-#include <Features/MeleeAttack.hpp>
-#include <Features/RangedAttack.hpp>
 #include <IO/System/EventLog.hpp>
 
 namespace sw::features {
 
+template <typename T>
+concept GameMechanic = requires(GameContext &gc, sw::core::EntityId id) {
+    { T::perform(gc, id) } -> std::same_as<bool>;
+};
+
 class Engine {
     GameContext &gc;
-
-    auto &entities() { return gc.entityRegistry().entities(); }
 
 public:
     Engine(GameContext &gc) : gc{gc} {}
@@ -64,7 +64,59 @@ public:
 
     /// @brief Start engine main routine. Routine stops if there are less than 2
     /// entities on map or no entity can make an action.
-    void run();
+    template <GameMechanic... Mechanics> void run() {
+        std::uint64_t tick = 1;
+
+        auto log = [&tick,
+                    logger{gc.serviceLocator().get<sw::EventLog>()}](auto &&event) {
+            if (logger) {
+                std::visit(
+                    [logger, tick](auto &payload) {
+                        logger->log(tick, std::move(payload));
+                    },
+                    event);
+            }
+        };
+
+        while (true) {
+            std::uint64_t alive = 0;
+
+            gc.entityRegistry().forEachWith<sw::core::components::Health>(
+                [&alive](auto id, auto health) { alive += health->dead() ? 0 : 1; });
+
+            if (alive < 2)
+                break;
+
+            auto hasUpdates = false;
+
+            gc.entityRegistry().forEach([&hasUpdates, this](auto id) {
+                hasUpdates |= (Mechanics::perform(gc, id) || ...);
+            });
+
+            // Garbage collect
+            gc.entityRegistry().forEachWith<sw::core::components::Health>(
+                [this](auto id, auto health) {
+                    if (health->dead()) {
+                        gc.entityRegistry().unregisterEntity(id);
+                        gc.addEvent(sw::io::UnitDied(id));
+                    }
+                });
+            gc.entityRegistry().cleanup();
+
+            // Event delivery
+            auto events = std::move(gc.extractEvents());
+
+            for (auto &ev : events)
+                log(std::move(ev));
+
+            events.clear();
+
+            if (!hasUpdates)
+                break;
+
+            ++tick;
+        }
+    }
 };
 
 } // namespace sw::features

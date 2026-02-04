@@ -3,6 +3,9 @@
 #include <Core/Registry.hpp>
 #include <Features/AllUnits.hpp>
 #include <Features/Engine.hpp>
+#include <Features/MarchMechanic.hpp>
+#include <Features/MeleeAttackMechanic.hpp>
+#include <Features/RangedAttackMechanic.hpp>
 #include <IO/Commands/CreateMap.hpp>
 #include <IO/Commands/March.hpp>
 #include <IO/Commands/SpawnHunter.hpp>
@@ -13,6 +16,7 @@
 
 namespace swcc = sw::core::components;
 namespace swu = sw::units;
+namespace swf = sw::features;
 
 int main(int argc, char **argv) {
     using namespace sw;
@@ -55,7 +59,8 @@ int main(int argc, char **argv) {
 
     parser.parse(file);
 
-    engine.run();
+    engine.run<swf::RangedAttackMechanic, swf::MeleeAttackMechanic,
+               swf::MarchMechanic>();
 
     return 0;
 }

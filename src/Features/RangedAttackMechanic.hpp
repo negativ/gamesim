@@ -5,7 +5,7 @@
 namespace sw::features {
 
 /// @brief Basic `ranged attack` logic
-struct RangedAttack {
+struct RangedAttackMechanic {
     /// @brief Try to perform `ranged` logic for entity.
     /// @param gc game context
     /// @param id entity id

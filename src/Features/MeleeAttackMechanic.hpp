@@ -7,7 +7,7 @@ namespace sw::features {
 using namespace sw::core;
 
 /// @brief Basic `melee attack` logic
-struct MeleeAttack {
+struct MeleeAttackMechanic {
 
     /// @brief Try to perform `melee` logic for entity.
     /// @param gc game context

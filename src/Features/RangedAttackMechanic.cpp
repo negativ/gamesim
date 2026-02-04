@@ -1,4 +1,4 @@
-#include <Features/RangedAttack.hpp>
+#include <Features/RangedAttackMechanic.hpp>
 
 #include <Features/AttackHelpers.hpp>
 
@@ -7,7 +7,7 @@ namespace sw::features {
 namespace swc = sw::core;
 namespace swcc = sw::core::components;
 
-bool RangedAttack::perform(GameContext &gc, swc::EntityId id) {
+bool RangedAttackMechanic::perform(GameContext &gc, swc::EntityId id) {
     auto ra = gc.entityRegistry().get<swcc::RangedAttackAbility>(id);
     auto pos = gc.entityRegistry().get<swcc::Position>(id);
 
@@ -42,10 +42,6 @@ bool RangedAttack::perform(GameContext &gc, swc::EntityId id) {
     *targetHp -= ra->agility;
 
     gc.addEvent(io::UnitAttacked(id, targetId, ra->agility, targetHp->current));
-
-    if (targetHp->dead()) {
-        gc.addEvent(sw::io::UnitDied(targetId));
-    }
 
     return true;
 }

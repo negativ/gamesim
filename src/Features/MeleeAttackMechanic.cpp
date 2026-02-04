@@ -1,4 +1,4 @@
-#include <Features/MeleeAttack.hpp>
+#include <Features/MeleeAttackMechanic.hpp>
 
 #include <deque>
 
@@ -10,7 +10,7 @@ namespace sw::features {
 namespace swc = sw::core;
 namespace swcc = sw::core::components;
 
-bool MeleeAttack::perform(GameContext &gc, EntityId id) {
+bool MeleeAttackMechanic::perform(GameContext &gc, EntityId id) {
     auto melee = gc.entityRegistry().get<swcc::MeleeAttackAbility>(id);
     auto pos = gc.entityRegistry().get<swcc::Position>(id);
 
@@ -37,10 +37,6 @@ bool MeleeAttack::perform(GameContext &gc, EntityId id) {
     *targetHp -= melee->damage;
 
     gc.addEvent(io::UnitAttacked(id, targetId, melee->damage, targetHp->current));
-
-    if (targetHp->dead()) {
-        gc.addEvent(sw::io::UnitDied(targetId));
-    }
 
     return true;
 }

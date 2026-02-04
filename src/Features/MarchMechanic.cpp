@@ -1,4 +1,4 @@
-#include <Features/March.hpp>
+#include <Features/MarchMechanic.hpp>
 
 #include <array>
 
@@ -18,7 +18,7 @@ namespace sw::features {
 namespace swc = sw::core;
 namespace swcc = sw::core::components;
 
-bool March::perform(GameContext &gc, swc::EntityId id) {
+bool MarchMechanic::perform(GameContext &gc, swc::EntityId id) {
     auto map = gc.serviceLocator().get<swc::Map>();
 
     if (!map)

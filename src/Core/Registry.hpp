@@ -183,8 +183,8 @@ public:
     /// @brief Perform cleanup of unregistered enities.
     void cleanup();
 
-    /// @brief entities
-    /// @return
+    /// @brief Get the list of all entities.
+    /// @returns List of registered intities.
     ///
     const EntityList &entities() const noexcept;
 

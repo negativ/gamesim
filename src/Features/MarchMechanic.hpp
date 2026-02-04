@@ -6,7 +6,7 @@
 namespace sw::features {
 
 /// @brief Basic `marching` logic
-struct March {
+struct MarchMechanic {
 
     /// @brief Try to perform `marching` logic for entity.
     /// @param gc game context
